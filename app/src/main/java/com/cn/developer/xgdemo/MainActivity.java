@@ -40,7 +40,11 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.app.Activity;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 import com.cn.developer.xgdemo.common.NotificationService;
 import com.cn.developer.xgdemo.po.XGNotification;
 import com.tencent.android.tpush.XGCustomPushNotificationBuilder;
@@ -79,11 +83,29 @@ public class MainActivity extends Activity implements OnItemClickListener,
         super.onCreate(savedInstanceState);
         context = this;
         XGPushConfig.enableDebug(this, true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            // 透明状态栏
+//            getWindow().addFlags(
+//                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//            // 透明导航栏
+//            getWindow().addFlags(
+//                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(Color.parseColor("#009959"));
+            getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_main);
         // 0.注册数据更新监听器
         updateListViewReceiver = new MsgReceiver();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("com.qq.xgdemo.activity.UPDATE_LISTVIEW");
+        intentFilter.addAction("com.cn.developer.xgdemo.activity.UPDATE_LISTVIEW");
         registerReceiver(updateListViewReceiver, intentFilter);
         // 1.获取设备Token
         Handler handler = new HandlerExtension(MainActivity.this);
